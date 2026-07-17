@@ -839,19 +839,48 @@
         setInterval(nextTestimonial, 6000);
 
         // Form submit
-        function handleSubmit(e) {
-            e.preventDefault();
-            const firstName = document.getElementById('firstName').value;
-            const lastName = document.getElementById('lastName').value;
-            const phone = document.getElementById('phone').value;
-            const checkIn = document.getElementById('checkIn').value;
-            const checkOut = document.getElementById('checkOut').value;
-            const packageSelect = document.getElementById('packageSelect').value;
-            const packageTime = document.getElementById('packageTime').value;
-            const specialRequests = document.getElementById('specialRequests').value;
-            const msg = `Hello Cinnamon Hikka Villa!%0ANew Booking Inquiry%0AGuest Name: ${firstName} ${lastName}%0APhone: ${phone}%0ACheck-in Date: ${checkIn}%0ACheck-out Date: ${checkOut}%0APackage: ${packageSelect}%0APackage Time: ${packageTime}%0ASpecial Requests: ${specialRequests || "No special requests"}%0AThank you.`;
-            window.open(`https://wa.me/94728359156?text=${encodeURIComponent(msg)}`, "_blank");
-        }
+      function handleSubmit(e) {
+    e.preventDefault();
+    
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName = document.getElementById('lastName').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const checkIn = document.getElementById('checkIn').value;
+    const checkOut = document.getElementById('checkOut').value;
+    const packageSelect = document.getElementById('packageSelect').value;
+    const packageTime = document.getElementById('packageTime').value;
+    const specialRequests = document.getElementById('specialRequests').value.trim() || "None";
+
+    const message = `CINNAMON HIKKA VILLA
+NEW BOOKING INQUIRY
+----------------------------------------
+
+GUEST INFORMATION
+Name: ${firstName} ${lastName}
+Phone: ${phone}
+
+STAY DETAILS
+Check-in Date: ${checkIn}
+Check-out Date: ${checkOut}
+
+PACKAGE INFORMATION
+Package: ${packageSelect}
+Time Slot: ${packageTime}
+
+SPECIAL REQUESTS
+${specialRequests}
+----------------------------------------
+Thank you for choosing Cinnamon Hikka Villa.
+We will respond to your inquiry shortly.
+
+Cinnamon Hikka Villa
+Hikkaduwa, Sri Lanka
++94 72 835 9156`;
+
+    const whatsappNumber = "94728359156";
+    const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappURL, "_blank");
+}
 
         // Mobile menu
         function toggleMobileMenu() {
