@@ -6,7 +6,7 @@
     <title>Cinnamon Hikka Villa | Luxury Stay in Hikkaduwa, Sri Lanka</title>
     <meta name="description" content="Cinnamon Hikka Villa is a peaceful private villa in Hikkaduwa, Sri Lanka. Packages for 2 to 15 guests with AC rooms, private living room, rooftop, kitchen and free parking." />
     <meta name="theme-color" content="#0B3D2E" />
-    <link rel="preload" as="image" href="images/2027.png" />
+    <link rel="preload" as="image" href="images/2029.jpg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -529,6 +529,9 @@
         .form-group input::placeholder, .form-group textarea::placeholder { color: rgba(11, 61, 46, 0.45); }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--emerald); box-shadow: 0 0 0 4px rgba(46, 157, 116, 0.18); }
         .form-group textarea { min-height: 120px; resize: vertical; }
+        .form-group input[type="date"] { cursor: pointer; }
+        .form-group input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; opacity: 0.65; padding: 4px; border-radius: 6px; transition: opacity var(--dur-fast), background-color var(--dur-fast); }
+        .form-group input[type="date"]:hover::-webkit-calendar-picker-indicator { opacity: 1; background-color: var(--mist); }
         .form-group select.is-flash { animation: flash 1.4s var(--ease); }
         @keyframes flash { 0%, 100% { box-shadow: 0 0 0 0 rgba(46, 157, 116, 0); } 30% { box-shadow: 0 0 0 6px rgba(46, 157, 116, 0.35); } }
         .form-submit { width: 100%; margin-top: 0.25rem; }
@@ -571,9 +574,35 @@
         .scroll-top:hover { background: var(--pine); color: #fff; }
         @media (min-width: 768px) { .scroll-top { right: 2.25rem; bottom: 6.5rem; } }
 
-        /* ---------- Scroll reveal (subtle) ---------- */
-        .js .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.7s var(--ease), transform 0.7s var(--ease); }
-        .js .reveal.in { opacity: 1; transform: none; }
+        /* =========================================================
+           SCROLL ANIMATIONS — each topic eases in as it arrives
+           (classes are added by JS; without JS everything is simply visible)
+           ========================================================= */
+        .js .reveal { transition: opacity 0.75s var(--ease) var(--d, 0ms), transform 0.75s var(--ease) var(--d, 0ms); }
+        .js .reveal:not(.in) { opacity: 0; transform: translate3d(0, 26px, 0); }
+        .js .reveal--zoom:not(.in) { transform: scale(0.94); }
+        /* side slides on every device: 24px on phones/tablets, 36px on laptops */
+        .js .reveal--left:not(.in)  { transform: translate3d(-24px, 0, 0); }
+        .js .reveal--right:not(.in) { transform: translate3d(24px, 0, 0); }
+        @media (min-width: 1024px) {
+            .js .reveal--left:not(.in)  { transform: translate3d(-36px, 0, 0); }
+            .js .reveal--right:not(.in) { transform: translate3d(36px, 0, 0); }
+        }
+        /* stop sliding elements from causing sideways scrolling on phones (incl. iOS Safari) */
+        main, .footer { overflow-x: clip; }
+        /* photos settle from a gentle zoom */
+        .js .reveal-media img { transition: transform 1.3s var(--ease) var(--d, 0ms); }
+        .js .reveal-media:not(.in) img { transform: scale(1.1); }
+        /* headings: a short accent line draws in above the title */
+        .js .h-accent::before {
+            content: ''; display: block; width: 44px; height: 3px; border-radius: 3px; margin-bottom: 0.85rem;
+            background: linear-gradient(90deg, var(--jade), var(--sage));
+            transform: scaleX(0); transform-origin: left; transition: transform 0.8s var(--ease) 0.25s;
+        }
+        .js .sec-head--center .h-accent::before, .js .cta-band .h-accent::before { margin-inline: auto; transform-origin: center; }
+        .js .cta-band .h-accent::before { background: var(--mint); }
+        .js .in .h-accent::before, .js .h-accent.in::before { transform: scaleX(1); }
+        @media (min-width: 1024px) { .js .packages-top .sec-head--center .h-accent::before { margin-inline: 0; transform-origin: left; } }
 
         body.no-scroll { overflow: hidden; }
 
@@ -684,11 +713,11 @@
             .footer-grid { gap: 2rem 1.25rem; margin-bottom: 2rem; }
         }
 
-        /* ---------- Inquiry form grouping (all widths below laptop) ----------
+        /* ---------- Inquiry form grouping ----------
            First + Last name ...... 2 columns (short text)
-           Phone .................. full width (long number, easier typing)
-           Check-in + Check-out ... 2 columns from 360px (stacked on the smallest phones)
-           Package / Package Time . full width on phones (long option text), 2 columns from 600px
+           Phone .................. full width on phones (long number, easier typing)
+           Check-in / Check-out ... own row each on phones (full-width date pickers), side by side from 600px
+           Package / Package Time . own row each on phones (long option text), side by side from 600px
            Special requests ....... full width */
         .form-row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 0.75rem; }
         @media (max-width: 1023px) {
@@ -698,8 +727,7 @@
             .form-group textarea { min-height: 96px; }
         }
         @media (max-width: 599px) {
-            .form-row--date-pkg .form-group:nth-child(n+3) { grid-column: 1 / -1; }
-            .form-group input[type="date"] { padding-inline: 0.75rem; }
+            .form-row--dates, .form-row--pkg { grid-template-columns: 1fr; }
         }
         @media (min-width: 360px) and (max-width: 599px) {
             .quick-book { grid-template-columns: minmax(0, 1fr) auto; }
@@ -708,7 +736,6 @@
             .qb-price { grid-row: 1; grid-column: 2; flex-direction: column; justify-content: flex-end; align-items: flex-end; gap: 0; padding: 0 0 0.3rem; }
         }
         @media (max-width: 359px) {
-            .form-row--date-pkg { grid-template-columns: 1fr; }
             .facilities-grid { grid-template-columns: 1fr; }
             .facility-card p { font-size: 0.86rem; }
         }
@@ -835,12 +862,6 @@
             .package-time { padding: 0.65rem 0.8rem; }
             .packages-top .sec-head p { font-size: 0.95rem; }
         }
-        @media (min-width: 1280px) and (max-height: 800px) {
-            .contact-grid { grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr); }
-            .form-row--date-pkg { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-            .form-row--date-pkg input, .form-row--date-pkg select { padding-left: 0.75rem; font-size: 0.95rem; }
-            .form-row--date-pkg select { padding-right: 1.75rem; font-size: 0.9rem; background-position: right 0.6rem center; }
-        }
 
         /* ---------- Large desktop ---------- */
         @media (min-width: 1440px) {
@@ -854,7 +875,13 @@
             .marquee-track { animation: none; flex-wrap: wrap; width: auto; justify-content: center; }
             .marquee-group[aria-hidden="true"] { display: none; }
             .marquee-group { flex-wrap: wrap; justify-content: center; row-gap: 0.5rem; }
-            .js .reveal, .js .hero-anim { opacity: 1; transform: none; }
+            /* animations stay on, but as a soft fade only — no sliding or zooming */
+            .js .reveal { transition: opacity 0.6s ease var(--d, 0ms) !important; }
+            .js .reveal:not(.in), .js .reveal--zoom:not(.in), .js .reveal--left:not(.in), .js .reveal--right:not(.in) { transform: none !important; }
+            .js .reveal-media img { transform: none !important; }
+            .js .h-accent::before { transition: transform 0.8s ease 0.25s !important; }
+            .js .hero-anim { transform: none !important; }
+            .js.page-ready .hero-anim { transition: opacity 0.8s ease !important; }
         }
 		/* =========================================================
            HERO — phones & tablets: villa top-right (~3/4 visible),
@@ -1051,7 +1078,7 @@
         <div class="container about-grid">
             <div class="about-media reveal">
                 <img src="images/2.jpeg" alt="Cinnamon Hikka Villa exterior and rooftop in daylight" class="about-img-main" loading="lazy" decoding="async" width="800" height="1000">
-                <img src="images/16.jpeg" alt="Relaxing rooftop seating area at the villa" class="about-img-inset" loading="lazy" decoding="async" width="400" height="400">
+                <img src="images/5.jpeg" alt="Relaxing rooftop seating area at the villa" class="about-img-inset" loading="lazy" decoding="async" width="400" height="400">
             </div>
             <div class="about-content">
                 <h2 id="aboutTitle">Relax, explore &amp; enjoy Hikkaduwa</h2>
@@ -1275,9 +1302,11 @@
                         <div class="form-group"><label for="lastName">Last Name</label><input type="text" id="lastName" placeholder="Doe" autocomplete="family-name" required></div>
                         <div class="form-group"><label for="phone">Phone</label><input type="tel" id="phone" placeholder="+94 72 835 9156" autocomplete="tel" inputmode="tel" required></div>
                     </div>
-                    <div class="form-row form-row--date-pkg">
+                    <div class="form-row form-row--dates">
                         <div class="form-group"><label for="checkIn">Check-in Date</label><input type="date" id="checkIn" required></div>
                         <div class="form-group"><label for="checkOut">Check-out Date</label><input type="date" id="checkOut" required></div>
+                    </div>
+                    <div class="form-row form-row--pkg">
                         <div class="form-group"><label for="packageSelect">Package</label><select id="packageSelect" required><option value="">Select Package</option></select></div>
                         <div class="form-group"><label for="packageTime">Package Time</label><select id="packageTime" required><option value="">Select Time</option><option value="Day Out">Day Out (10:00 AM – 4:00 PM)</option><option value="Night Out">Night Out (5:00 PM – 9:00 AM)</option><option value="Special Time">Special Time (1:00 PM – 10:30 AM)</option><option value="Full Day">Full Day (10:00 AM – 9:00 AM)</option></select></div>
                     </div>
@@ -1468,6 +1497,7 @@
                     <span class="gallery-expand" aria-hidden="true"><i class="fas fa-expand"></i></span>
                     <span class="gallery-caption" aria-hidden="true"><span class="gallery-caption-title">${item.title}</span><span class="gallery-caption-cat">${CATEGORY_LABELS[item.category]}</span></span>
                 </button>`).join('');
+            observeReveal(grid.querySelectorAll('.gallery-item'), 'reveal--zoom');
         }
         document.getElementById('galleryGrid').addEventListener('click', (e) => {
             const item = e.target.closest('.gallery-item');
@@ -1752,17 +1782,93 @@ Hikkaduwa, Sri Lanka
             window.open(whatsappURL, "_blank");
         }
 
-        /* ---------- Subtle scroll reveal (replaces GSAP) ---------- */
-        (function () {
-            const els = document.querySelectorAll('.reveal');
-            if (!('IntersectionObserver' in window) || prefersReducedMotion) { els.forEach(el => el.classList.add('in')); return; }
-            const io = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) { entry.target.classList.add('in'); io.unobserve(entry.target); }
-                });
-            }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
-            els.forEach(el => io.observe(el));
+        /* ---------- Scroll animations (all devices: phones, tablets, laptops) ----------
+           Elements that enter the screen together animate one after another (stagger).
+           Numbers count up once when they appear. Reduced-motion devices get a soft fade. */
+        const revealIO = ('IntersectionObserver' in window) ? new IntersectionObserver((entries) => {
+            const shown = entries.filter(e => e.isIntersecting)
+                .sort((a, b) => (a.boundingClientRect.top - b.boundingClientRect.top) || (a.boundingClientRect.left - b.boundingClientRect.left));
+            shown.forEach((entry, k) => showEl(entry.target, Math.min(k * 80, 480)));
+        }, { rootMargin: '0px 0px -6% 0px', threshold: 0.12 }) : null;
+
+        function showEl(el, delay = 0) {
+            if (el.classList.contains('in')) return;
+            if (delay) el.style.setProperty('--d', delay + 'ms');
+            el.classList.add('in');
+            if (revealIO) revealIO.unobserve(el);
+            setTimeout(() => el.style.removeProperty('--d'), 1500 + delay);
+            countUpWithin(el);
+        }
+        function observeReveal(els, extra = '') {
+            els.forEach(el => {
+                el.classList.add('reveal', ...extra.split(' ').filter(Boolean));
+                revealIO ? revealIO.observe(el) : el.classList.add('in');
+            });
+        }
+
+        // Count-up numbers (100+, 4.9) — text stays correct without JS
+        function setupCounters() {
+            if (!revealIO) return;
+            document.querySelectorAll('.about-stat-number, .rating-summary strong').forEach(el => {
+                const m = el.textContent.trim().match(/^(\d+(?:\.\d+)?)(\+?)$/);
+                if (!m) return;                                   // e.g. "No 1" stays as it is
+                el.dataset.countTo = m[1];
+                el.dataset.countSuffix = m[2];
+                el.textContent = (0).toFixed((m[1].split('.')[1] || '').length) + m[2];
+            });
+        }
+        function countUpWithin(root) {
+            const els = root.matches('[data-count-to]') ? [root] : root.querySelectorAll('[data-count-to]');
+            els.forEach(el => {
+                const target = parseFloat(el.dataset.countTo), dec = (el.dataset.countTo.split('.')[1] || '').length;
+                const suffix = el.dataset.countSuffix || '', t0 = performance.now(), dur = 1300;
+                delete el.dataset.countTo;
+                (function tick(now) {
+                    const p = Math.min(1, (now - t0) / dur), eased = 1 - Math.pow(1 - p, 3);
+                    el.textContent = (target * eased).toFixed(dec) + suffix;
+                    if (p < 1) requestAnimationFrame(tick);
+                })(t0);
+            });
+        }
+
+        (function initAnimations() {
+            // heading accent line
+            document.querySelectorAll('.sec-head h2, .about-content h2, .testimonials-intro h2, .location-info h2, .cta-band h2')
+                .forEach(h => h.classList.add('h-accent'));
+            setupCounters();
+            const groups = [
+                ['.reveal', ''],                                   // anything already marked in the HTML
+                ['.sec-head', ''],
+                ['.about-media', 'reveal--left reveal-media'],
+                ['.about-content > *', ''],
+                ['.about-stat', ''],
+                ['.facilities-media', 'reveal-media'],
+                ['.facility-card', ''],
+                ['.gallery-filters', ''],
+                ['.packages-picker', ''],
+                ['.packages-container', ''],
+                ['.packages-note', ''],
+                ['.testimonials-intro', 'reveal--left'],
+                ['.testimonials-slider', 'reveal--right'],
+                ['.cta-band .container > *', ''],
+                ['.location-map', 'reveal--left reveal-media'],
+                ['.location-info > :not(.location-highlights)', ''],
+                ['.location-highlight', ''],
+                ['.contact-info', 'reveal--left'],
+                ['.contact-form', 'reveal--right'],
+                ['.footer-grid > *', '']
+            ];
+            groups.forEach(([sel, extra]) => observeReveal(document.querySelectorAll(sel), extra));
+
+            // safety net: anything still hidden when the page bottom is reached gets shown
+            if (revealIO) window.addEventListener('scroll', () => {
+                if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4)
+                    document.querySelectorAll('.reveal:not(.in)').forEach(el => showEl(el));
+            }, { passive: true });
         })();
+
+        /* ---------- Date fields: tapping anywhere opens the calendar ---------- */
+        [checkInEl, checkOutEl].forEach(el => el.addEventListener('click', () => { try { el.showPicker && el.showPicker(); } catch (err) {} }));
 
         document.getElementById('year').textContent = new Date().getFullYear();
         loadGallery("all");
